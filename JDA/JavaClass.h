@@ -298,10 +298,8 @@ public:
 	std::string getDescriptors() { return cp->getUtf8At(descriptorIndex); }
 	
 	auto getReturnType() -> std::string { 
-		auto descriptor = cp->getUtf8At(descriptorIndex); 
-		size_t index = (index = descriptor.find("()")) != std::string::npos ? index : (index = descriptor.find(";)")) != std::string::npos ? index : -1;
-		assert(index != -1); 
-		return &descriptor.data()[index + 2];
+		auto descriptor = getDescriptors();
+		return descriptor.substr(descriptor.find_last_of(")")+1);
 	}
 
 	auto getArguments() -> std::vector<std::pair<size_t, std::string>>

@@ -50,6 +50,8 @@ void JavaClass::readAttributeList(u2 count, std::vector<AttributeInfo*>* list) {
 				buf->skip(2);
 				buf->skip(buf->get<u4>());
 			}
+
+			attribute->value = code;
 		}
 		else if (name.compare("InnerClasses") == 0) {
 			InnerClassAV* innerClassAV = new InnerClassAV(constantPool);
@@ -62,6 +64,7 @@ void JavaClass::readAttributeList(u2 count, std::vector<AttributeInfo*>* list) {
 				buf->get(&innerClass->accessFlags);
 				innerClassAV->innerClasses.push_back(innerClass);
 			}
+			attribute->value = innerClassAV;
 		}
 
 		list->push_back(attribute);
@@ -116,11 +119,15 @@ void JavaClass::read() {
 			CP_Long* cpLong = new CP_Long(type);
 			buf->get(&cpLong->value);
 			constantPool->cpInfos.push_back(cpLong);
+			constantPool->cpInfos.push_back(new ConstantPoolInfo(ConstantPoolType::CONSTANT_Null));
+			i ++;
 		}
 		else if (type == ConstantPoolType::CONSTANT_Double) {
 			CP_Double* cpLong = new CP_Double(type);
 			buf->get(&cpLong->value);
 			constantPool->cpInfos.push_back(cpLong);
+			constantPool->cpInfos.push_back(new ConstantPoolInfo(ConstantPoolType::CONSTANT_Null));
+			i ++;
 		}
 		else if (type == ConstantPoolType::CONSTANT_NameAndType) {
 			CP_NameAndType* cpNameAndType = new CP_NameAndType(type);

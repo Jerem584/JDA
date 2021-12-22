@@ -6,7 +6,7 @@ ByteBuffer::ByteBuffer(std::vector<byte> buf) {
 }
 
 std::vector<byte> ByteBuffer::read(int size) {
-	if (pos < buffer.size() && pos+size < buffer.size()) {
+	if (pos < buffer.size() && pos+size < buffer.size()+1) {
 		std::vector<u1> res(buffer.begin() + pos, buffer.begin() + pos + size);
 		std::reverse(res.begin(), res.end());
 		pos += size;
