@@ -1,8 +1,6 @@
 #include "JavaClass.h"
 
 void JavaClass::read() {
-	std::cout << "reading class with size " << buf->buffer.size() << std::endl;
-
 	buf->skip(4);
 	buf->get(&minorVersion);
 	buf->get(&majorVersion);
@@ -10,7 +8,6 @@ void JavaClass::read() {
 	buf->get(&constantPoolCount);
 	for (int i = 0; i < constantPoolCount-1; i++) {
 		ConstantPoolType type = (ConstantPoolType)buf->get<u1>();
-		std::cout << "type " << (int)type << std::endl;
 		if (type == ConstantPoolType::CONSTANT_MethodRef) {
 			CP_MethodRef* methodRef = new CP_MethodRef(type);
 			buf->get(&methodRef->classIndex);
@@ -60,9 +57,7 @@ void JavaClass::read() {
 		}
 		else if (type == ConstantPoolType::CONSTANT_Utf8) {
 			CP_Utf8* cpUtf8 = new CP_Utf8(type);
-			std::cout << "idx " << i << std::endl;
 			cpUtf8->value = buf->readString(buf->get<u2>());
-			std::cout << "val " << cpUtf8->value.c_str() << std::endl;
 			cpInfos.push_back(cpUtf8);
 		}
 		else if (type == ConstantPoolType::CONSTANT_MethodHandle) {
