@@ -26,7 +26,7 @@ int main() {
 			{
 				std::cout << argument.second << (method->getArguments().size() >= argument.first+size_t(1) ? "," : "");
 			}
-			std::cout << ")" << method->getReturnValue() << std::endl;
+			std::cout << ")" << method->getReturnType() << std::endl;
 		}
 		std::cout << std::endl;
 	}

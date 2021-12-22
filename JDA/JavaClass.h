@@ -297,7 +297,7 @@ public:
 	std::string getName() { return cp->getUtf8At(nameIndex); }
 	std::string getDescriptors() { return cp->getUtf8At(descriptorIndex); }
 	
-	auto getReturnValue() -> std::string { 
+	auto getReturnType() -> std::string { 
 		auto descriptor = cp->getUtf8At(descriptorIndex); 
 		size_t index = (index = descriptor.find("()")) != std::string::npos ? index : (index = descriptor.find(";)")) != std::string::npos ? index : -1;
 		assert(index != -1); 
