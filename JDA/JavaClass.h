@@ -182,6 +182,9 @@ public:
 	u2 accessFlags;
 	u2 thisClass;
 	u2 superClass;
+
+	u2 interfaceCount;
+	std::vector<std::string> interfaces;
 public:
 	JavaClass(ByteBuffer* buffer) : buf(buffer){}
 	void read();

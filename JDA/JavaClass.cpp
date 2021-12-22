@@ -96,4 +96,9 @@ void JavaClass::read() {
 	buf->get(&accessFlags);
 	buf->get(&thisClass);
 	buf->get(&superClass);
+
+	buf->get(&interfaceCount);
+	for (short i = 0; i < interfaceCount; i++) {
+		interfaces.push_back(constantPool->getClassAt(buf->get<u2>()));
+	}
 }
