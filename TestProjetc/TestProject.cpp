@@ -11,8 +11,7 @@ int main() {
 	JDA* jda = new JDA(file);
 
 	auto b = jda->classes[0];
-	auto constantPool = b->constantPool;
-	std::cout << constantPool->getNameAndTypeDescriptor(56) << std::endl;
+	
 
 	return 0;
 }

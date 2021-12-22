@@ -174,7 +174,18 @@ public:
 	u2 majorVersion;
 
 	ConstantPool* constantPool;
+
+	u2 accessFlags;
 public:
 	JavaClass(ByteBuffer* buffer) : buf(buffer){}
 	void read();
+public:
+	bool isPublic() { return (accessFlags & 0x0001) != 0; }
+	bool isFinal() { return (accessFlags & 0x0010) != 0; }
+	bool isSuper() { return (accessFlags & 0x0020) != 0; }
+	bool isInterface() { return (accessFlags & 0x0200) != 0; }
+	bool isAbstract() { return (accessFlags & 0x0400) != 0; }
+	bool isSynthetic() { return (accessFlags & 0x1000) != 0; }
+	bool isAnnotation() { return (accessFlags & 0x2000) != 0; }
+	bool isEnum() { return (accessFlags & 0x4000) != 0; }
 };

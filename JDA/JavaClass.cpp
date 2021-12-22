@@ -16,12 +16,14 @@ void JavaClass::read() {
 			buf->get(&methodRef->classIndex);
 			buf->get(&methodRef->nameAndTypeIndex);
 			constantPool->cpInfos.push_back(methodRef);
-		} else if(type == ConstantPoolType::CONSTANT_FieldRef) {
+		}
+		else if (type == ConstantPoolType::CONSTANT_FieldRef) {
 			CP_FieldRef* fieldRef = new CP_FieldRef(type);
 			buf->get(&fieldRef->classIndex);
 			buf->get(&fieldRef->nameAndTypeIndex);
 			constantPool->cpInfos.push_back(fieldRef);
-		} else if (type == ConstantPoolType::CONSTANT_InterfaceMethodRef) {
+		}
+		else if (type == ConstantPoolType::CONSTANT_InterfaceMethodRef) {
 			CP_InterfaceMethodRef* interfaceMethodRef = new CP_InterfaceMethodRef(type);
 			buf->get(&interfaceMethodRef->classIndex);
 			buf->get(&interfaceMethodRef->nameAndTypeIndex);
@@ -90,4 +92,6 @@ void JavaClass::read() {
 			exit(1);
 		}
 	}
+
+	buf->get(&accessFlags);
 }
