@@ -11,9 +11,7 @@ int main() {
 	JDA* jda = new JDA(file);
 
 	auto b = jda->classes[0];
-	for (auto cpInfo : b->cpInfos) {
-		std::cout << (int)cpInfo->type << std::endl;
-	}
+	auto constantPool = b->constantPool;
 
 	return 0;
 }

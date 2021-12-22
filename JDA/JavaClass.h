@@ -127,6 +127,12 @@ public:
 	CP_InvokeDynamic(ConstantPoolType cpType) : ConstantPoolInfo(cpType) {}
 };
 
+class ConstantPool {
+public:
+	u2 constantPoolCount;
+	std::vector<ConstantPoolInfo*> cpInfos;
+};
+
 class JavaClass {
 private:
 	ByteBuffer* buf;
@@ -134,8 +140,7 @@ public:
 	u2 minorVersion;
 	u2 majorVersion;
 
-	u2 constantPoolCount;
-	std::vector<ConstantPoolInfo*> cpInfos;
+	ConstantPool* constantPool;
 public:
 	JavaClass(ByteBuffer* buffer) : buf(buffer){}
 	void read();
