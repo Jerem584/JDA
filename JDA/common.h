@@ -7,5 +7,5 @@
 #include <vector>
 #include <filesystem>
 #include <unordered_map>
-#include <zip.h>
+#include <zip.h> // vcpkg install libzip:x64-windows && vcpkg integrate install
 #include <fstream>

@@ -16,7 +16,7 @@ std::vector<byte> ByteBuffer::read(int size) {
 }
 
 std::string ByteBuffer::readString(int size) {
-	char* data = new char(size+1);
+	char* data = new char(size + 1);
 	std::vector<byte> buf = read(size);
 	std::reverse(buf.begin(), buf.end());
 	memcpy(data, buf.data(), size);
