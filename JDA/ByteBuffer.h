@@ -17,9 +17,6 @@ public:
 	auto skip(int size) -> void { pos += size; }
 
 	std::string readString(int);
-	void skip(int amount) {
-		pos += amount;
-	}
 };
 
 template<typename T>
