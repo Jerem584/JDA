@@ -6,7 +6,7 @@
 class JDA {
 public:
 	zip* jarFile;
-	std::unordered_map<std::string, ByteBuffer*> classBuffers;
 public:
+	std::unordered_map<std::string, ByteBuffer*> classBuffers;
 	JDA(zip*);
 };
