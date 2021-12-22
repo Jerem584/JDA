@@ -15,7 +15,7 @@ JDA::JDA(zip* archive) {
 			zip_fclose(file);
 
 			std::vector<byte> res(buffer, buffer + size);
-			classes.insert(std::pair(name, new ByteBuffer(res)));
+			classBuffers.insert(std::pair(name, new ByteBuffer(res)));
 		}
 	}
 }
