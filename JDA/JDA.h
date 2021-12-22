@@ -2,11 +2,12 @@
 
 #include "common.h"
 #include "ByteBuffer.h"
+#include "JavaClass.h"
 
 class JDA {
 public:
 	zip* jarFile;
 public:
-	std::unordered_map<std::string, ByteBuffer*> classBuffers;
+	std::vector<JavaClass*> classes;
 	JDA(zip*);
 };

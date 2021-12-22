@@ -6,8 +6,9 @@ ByteBuffer::ByteBuffer(std::vector<byte> buf) {
 }
 
 std::vector<byte> ByteBuffer::read(int size) {
-	if (pos < buffer.size() && pos < buffer.size() + size) {
-		std::vector<byte> res(buffer.begin() + pos, buffer.begin() + pos + size);
+	std::cout << "read " << pos << " " << size << std::endl;
+	if (pos < buffer.size() && pos+size < buffer.size()) {
+		std::vector<u1> res(buffer.begin() + pos, buffer.begin() + pos + size);
 		std::reverse(res.begin(), res.end());
 		pos += size;
 		return res;
@@ -15,11 +16,12 @@ std::vector<byte> ByteBuffer::read(int size) {
 	return std::vector<byte>();
 }
 
-std::string ByteBuffer::readString(int size) {
-	char* data = new char(size + 1);
-	std::vector<byte> buf = read(size);
+const char* ByteBuffer::readString(int size) {
+	std::cout << "reading string " << size << std::endl;
+	char* data = new char[size];
+	std::vector<u1> buf = read(size);
 	std::reverse(buf.begin(), buf.end());
 	memcpy(data, buf.data(), size);
 	data[size] = 0x00;
-	return std::string(data); // salut salut 
+	return data;
 }

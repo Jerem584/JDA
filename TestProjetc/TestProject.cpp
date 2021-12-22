@@ -10,8 +10,9 @@ int main() {
 	zip* file = zip_open(file_path.string().c_str(), ZIP_RDONLY, &error);
 	JDA* jda = new JDA(file);
 
-	for (auto b : jda->classBuffers) {
-		
+	auto b = jda->classes[0];
+	for (auto cpInfo : b->cpInfos) {
+		std::cout << (int)cpInfo->type << std::endl;
 	}
 
 	return 0;
