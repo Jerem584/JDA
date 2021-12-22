@@ -4,7 +4,7 @@
 #include "ByteBuffer.h"
 
 class JDA {
-private:
+public:
 	zip* jarFile;
 	std::unordered_map<std::string, ByteBuffer*> classBuffers;
 public:
