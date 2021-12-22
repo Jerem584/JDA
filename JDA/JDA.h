@@ -10,4 +10,6 @@ public:
 public:
 	std::vector<JavaClass*> classes;
 	JDA(zip*);
+public:
+	JavaClass* getClass(std::string name);
 };

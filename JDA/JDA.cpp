@@ -16,6 +16,7 @@ JDA::JDA(zip* archive) {
 			std::vector<byte> res(buffer, buffer + size);
 			if (buffer[0] != 202/*ca*/ || buffer[1] != 254/*fe*/ || buffer[2] != 186/*ba*/ || buffer[3] != 190/*be*/) {
 				std::cout << "[-] Magic value incorrect for -> " << name << std::endl;
+				continue;
 			}
 			free(buffer); // free (c'est mieux)
 			JavaClass* clazz = new JavaClass(new ByteBuffer(res));
@@ -23,4 +24,12 @@ JDA::JDA(zip* archive) {
 			classes.push_back(clazz);
 		}
 	}
+}
+
+JavaClass* JDA::getClass(std::string name) {
+	for (const auto& clazz : classes) {
+		if (clazz->getClassName().compare(name) == 0)
+			return clazz;
+	}
+	return nullptr;
 }

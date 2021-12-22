@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once
 #include "common.h"
 #include "ByteBuffer.h"
 
@@ -170,6 +170,147 @@ public:
 	}
 };
 
+class AttributeValue {
+public:
+	ConstantPool* cp;
+public:
+	AttributeValue(ConstantPool* constantPool) : cp(constantPool){}
+};
+
+class ConstantValue : public AttributeValue {
+public:
+	u2 constantValueIndex;
+public:
+	ConstantValue(ConstantPool* c) : AttributeValue(c){}
+public:
+	u4 getInt() { return cp->getIntAt(constantValueIndex); }
+	u4 getFloat() { return cp->getFloatAt(constantValueIndex); }
+	u4 getLong() { return cp->getLongAt(constantValueIndex); }
+	u4 getDouble() { return cp->getDoubleAt(constantValueIndex); }
+};
+
+class Synthetic : public AttributeValue {
+public:
+	Synthetic(ConstantPool* c) : AttributeValue(c) {}
+};
+
+class Signature : public AttributeValue {
+public:
+	u2 signatureIndex;
+public:
+	Signature(ConstantPool* c) : AttributeValue(c) {}
+public:
+	std::string getSignature() { return cp->getUtf8At(signatureIndex); }
+};
+
+class Deprecated : public AttributeValue {
+public:
+	Deprecated(ConstantPool* c) : AttributeValue(c) {}
+};
+
+class Exception {
+public:
+	u2 startPc, endPc, handlerPc, catchType;
+};
+
+class Code : public AttributeValue {
+public:
+	u2 maxStack;
+	u2 maxLocals;
+
+	u4 codeLength;
+	std::vector<u1> code;
+
+	u2 exceptionTableLength;
+	std::vector<Exception*> exceptionTable;
+
+	//skip inside attributes//
+public:
+	Code(ConstantPool* c) : AttributeValue(c) {}
+};
+
+class InnerClass {
+public:
+	ConstantPool* cp;
+	u2 innerClassIndex, outerClassIndex, innerNameIndex, accessFlags;
+public:
+	InnerClass(ConstantPool* constantPool) : cp(constantPool){}
+public:
+	std::string getClassName() { return cp->getUtf8At(innerNameIndex); }
+};
+
+class InnerClassAV : public AttributeValue {
+public:
+	u2 innerClassCount;
+	std::vector<InnerClass*> innerClasses;
+public:
+	InnerClassAV(ConstantPool* c) : AttributeValue(c) {}
+};
+
+class AttributeInfo {
+public:
+	ConstantPool* cp;
+	u2 attributeNameIndex;
+	u4 attributeLength;
+	AttributeValue* value;
+public:
+	AttributeInfo(ConstantPool* constantPool) : cp(constantPool) {}
+public:
+	std::string getName() { return cp->getUtf8At(attributeNameIndex); }
+};
+
+class FieldInfo {
+public:
+	ConstantPool* cp;
+	u2 accessFlags;
+	u2 nameIndex;
+	u2 descriptorIndex;
+	u2 attributeCount;
+	std::vector<AttributeInfo*> attributes;
+public:
+	FieldInfo(ConstantPool* constantPool) : cp(constantPool){}
+public:
+	std::string getName() { return cp->getUtf8At(nameIndex); }
+	std::string getDescriptor() { return cp->getUtf8At(descriptorIndex); }
+
+	bool isPublic() { return (accessFlags & 0x0001) != 0; }
+	bool isPrivate() { return (accessFlags & 0x0002) != 0; }
+	bool isProtected() { return (accessFlags & 0x0004) != 0; }
+	bool isStatic() { return (accessFlags & 0x0008) != 0; }
+	bool isFinal() { return (accessFlags & 0x0010) != 0; }
+	bool isVolatile() { return (accessFlags & 0x0040) != 0; }
+	bool isTransient() { return (accessFlags & 0x0080) != 0; }
+	bool isSynthetic() { return (accessFlags & 0x1000) != 0; }
+	bool isEnum() { return (accessFlags & 0x4000) != 0; }
+};
+
+class MethodInfo {
+public:
+	ConstantPool* cp;
+	u2 accessFlags, nameIndex, descriptorIndex;
+	
+	u2 attributeCount;
+	std::vector<AttributeInfo*> attributes;
+public:
+	MethodInfo(ConstantPool* constantPool) : cp(constantPool){}
+public:
+	std::string getName() { return cp->getUtf8At(nameIndex); }
+	std::string getDescriptors() { return cp->getUtf8At(descriptorIndex); }
+
+	bool isPublic() { return (accessFlags & 0x0001) != 0; }
+	bool isPrivate() { return (accessFlags & 0x0002) != 0; }
+	bool isProtected() { return (accessFlags & 0x0004) != 0; }
+	bool isStatic() { return (accessFlags & 0x0008) != 0; }
+	bool isFinal() { return (accessFlags & 0x0010) != 0; }
+	bool isSynchronized() { return (accessFlags & 0x0020) != 0; }
+	bool isBridge() { return (accessFlags & 0x0040) != 0; }
+	bool isVarArgs() { return (accessFlags & 0x0080) != 0; }
+	bool isNative() { return (accessFlags & 0x0100) != 0; }
+	bool isAbstract() { return (accessFlags & 0x0400) != 0; }
+	bool isStrict() { return (accessFlags & 0x0800) != 0; }
+	bool isSynthetic() { return (accessFlags & 0x1000) != 0; }
+};
+
 class JavaClass {
 private:
 	ByteBuffer* buf;
@@ -185,8 +326,20 @@ public:
 
 	u2 interfaceCount;
 	std::vector<std::string> interfaces;
+
+	u2 fieldCount;
+	std::vector<FieldInfo*> fields;
+
+	u2 methodCount;
+	std::vector<MethodInfo*> methods;
+
+	u2 attributeCount;
+	std::vector<AttributeInfo*> attributes;
 public:
-	JavaClass(ByteBuffer* buffer) : buf(buffer){}
+	JavaClass(ByteBuffer* buffer) : buf(buffer) {}
+private:
+	void readAttributeList(u2, std::vector<AttributeInfo*>*);
+public:
 	void read();
 public:
 	bool isPublic() { return (accessFlags & 0x0001) != 0; }
@@ -205,4 +358,7 @@ public:
 	std::string getSuperClassName() {
 		return constantPool->getClassAt(superClass);
 	}
+
+	bool hasAttribute(std::string name);
+	AttributeInfo* getAttribute(std::string name);
 };

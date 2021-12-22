@@ -1,5 +1,73 @@
 #include "JavaClass.h"
 
+void JavaClass::readAttributeList(u2 count, std::vector<AttributeInfo*>* list) {
+	for (short i = 0; i < count; i++) {
+		AttributeInfo* attribute = new AttributeInfo(constantPool);
+		buf->get(&attribute->attributeNameIndex);
+		buf->get(&attribute->attributeLength);
+
+		std::string name = attribute->getName();
+		if (name.compare("ConstantValue") == 0) {
+			ConstantValue* cv = new ConstantValue(constantPool);
+			buf->get(&cv->constantValueIndex);
+			attribute->value = cv;
+		}
+		else if (name.compare("Synthetic") == 0) {
+			attribute->value = new Synthetic(constantPool);
+		}
+		else if (name.compare("Signature") == 0) {
+			Signature* sig = new Signature(constantPool);
+			buf->get(&sig->signatureIndex);
+			attribute->value = sig;
+		}
+		else if (name.compare("Deprecated") == 0) {
+			attribute->value = new Deprecated(constantPool);
+		}
+		else if (name.compare("RuntimeVisibleAnnotations") == 0 || name.compare("RuntimeInvisibleAnnotations") == 0 || name.compare("RuntimeVisibleParameterAnnotations") == 0 || name.compare("RuntimeInvisibleParameterAnnotations") == 0 || name.compare("AnnotationDefault") == 0 || name.compare("SourceFile") == 0 || name.compare("SourceFileDebugExtension") == 0 || name.compare("BootstrapMethods") == 0) {
+			buf->skip(attribute->attributeLength);
+		}
+		else if (name.compare("Code") == 0) {
+			Code* code = new Code(constantPool);
+			buf->get(&code->maxStack);
+			buf->get(&code->maxLocals);
+
+			buf->get(&code->codeLength);
+			for (int i = 0; i < code->codeLength; i++) {
+				code->code.push_back(buf->get<u1>());
+			}
+
+			buf->get(&code->exceptionTableLength);
+			for (short i = 0; i < code->exceptionTableLength; i++) {
+				Exception* exception = new Exception();
+				buf->get(&exception->startPc);
+				buf->get(&exception->endPc);
+				buf->get(&exception->handlerPc);
+				buf->get(&exception->catchType);
+			}
+
+			short attributeCount = buf->get<u2>();
+			for (short i = 0; i < attributeCount; i++) {
+				buf->skip(2);
+				buf->skip(buf->get<u4>());
+			}
+		}
+		else if (name.compare("InnerClasses") == 0) {
+			InnerClassAV* innerClassAV = new InnerClassAV(constantPool);
+			buf->get(&innerClassAV->innerClassCount);
+			for (short i = 0; i < innerClassAV->innerClassCount; i++) {
+				InnerClass* innerClass = new InnerClass(constantPool);
+				buf->get(&innerClass->innerClassIndex);
+				buf->get(&innerClass->outerClassIndex);
+				buf->get(&innerClass->innerNameIndex);
+				buf->get(&innerClass->accessFlags);
+				innerClassAV->innerClasses.push_back(innerClass);
+			}
+		}
+
+		list->push_back(attribute);
+	}
+}
+
 void JavaClass::read() {
 	buf->skip(4);
 	buf->get(&minorVersion);
@@ -88,7 +156,7 @@ void JavaClass::read() {
 			constantPool->cpInfos.push_back(cpClass);
 		}
 		else {
-			std::cerr << "Ptdr c'est quoi ça poto ? " << (int)type << std::endl;
+			std::cerr << "[-] Couldn't retrieve type -> " << (int)type << std::endl;
 			exit(1);
 		}
 	}
@@ -101,4 +169,51 @@ void JavaClass::read() {
 	for (short i = 0; i < interfaceCount; i++) {
 		interfaces.push_back(constantPool->getClassAt(buf->get<u2>()));
 	}
+
+	buf->get(&fieldCount);
+	for (short i = 0; i < fieldCount; i++) {
+		FieldInfo* field = new FieldInfo(constantPool);
+		buf->get(&field->accessFlags);
+		buf->get(&field->nameIndex);
+		buf->get(&field->descriptorIndex);
+
+		buf->get(&field->attributeCount);
+		readAttributeList(field->attributeCount, &field->attributes);
+
+		fields.push_back(field);
+	}
+
+	buf->get(&methodCount);
+	for (short i = 0; i < methodCount; i++) {
+		MethodInfo* method = new MethodInfo(constantPool);
+		buf->get(&method->accessFlags);
+		buf->get(&method->nameIndex);
+		buf->get(&method->descriptorIndex);
+
+		buf->get(&method->attributeCount);
+		readAttributeList(method->attributeCount, &method->attributes);
+
+		methods.push_back(method);
+	}
+
+	buf->get(&attributeCount);
+	readAttributeList(attributeCount, &attributes);
+}
+
+bool JavaClass::hasAttribute(std::string name) {
+	for (const auto& attr : attributes) {
+		if(attr->getName().compare(name) == 0)
+			return true;
+	}
+	return false;
+}
+
+AttributeInfo* JavaClass::getAttribute(std::string name) {
+	if (hasAttribute(name)) {
+		for (const auto& attr : attributes) {
+			if (attr->getName().compare(name) == 0)
+				return attr;
+		}
+	}
+	return nullptr;
 }

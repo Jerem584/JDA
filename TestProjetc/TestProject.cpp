@@ -13,5 +13,15 @@ int main() {
 	auto b = jda->classes[0];
 	std::cout << b->getClassName() << " : " << b->getSuperClassName() << " : " << b->interfaces[0] << std::endl;
 
+	std::cout << "Fields:" << std::endl;
+	for (auto field : b->fields) {
+		std::cout << "-- " << field->getName() << field->getDescriptor() << std::endl;
+	}
+
+	std::cout << "Methods:" << std::endl;
+	for (auto method : b->methods) {
+		std::cout << "-- " << method->getName() << method->getDescriptors() << std::endl;
+	}
+	
 	return 0;
 }
