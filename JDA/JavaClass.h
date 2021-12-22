@@ -1,7 +1,7 @@
 //#pragma once
 #include "common.h"
 #include "ByteBuffer.h"
-
+#pragma warning(disable : 26495)
 enum class ConstantPoolType {
 	CONSTANT_Null = 0,
 	CONSTANT_Class = 7,
@@ -154,19 +154,19 @@ public:
 	}
 
 	u4 getIntAt(int idx) {
-		return ((CP_Integer*)cpInfos.at(idx))->value;
+		return (u4)((CP_Integer*)cpInfos.at(idx))->value;
 	}
 
 	float getFloatAt(int idx) {
-		return ((CP_Float*)cpInfos.at(idx))->value;
+		return (float)((CP_Float*)cpInfos.at(idx))->value;
 	}
 
 	long getLongAt(int idx) {
-		return ((CP_Long*)cpInfos.at(idx))->value;
+		return (long)((CP_Long*)cpInfos.at(idx))->value;
 	}
 
 	double getDoubleAt(int idx) {
-		return ((CP_Long*)cpInfos.at(idx))->value;
+		return (double)((CP_Long*)cpInfos.at(idx))->value;
 	}
 };
 
@@ -183,10 +183,10 @@ public:
 public:
 	ConstantValue(ConstantPool* c) : AttributeValue(c){}
 public:
-	u4 getInt() { return cp->getIntAt(constantValueIndex); }
-	u4 getFloat() { return cp->getFloatAt(constantValueIndex); }
-	u4 getLong() { return cp->getLongAt(constantValueIndex); }
-	u4 getDouble() { return cp->getDoubleAt(constantValueIndex); }
+	u4 getInt() { return (u4)cp->getIntAt(constantValueIndex); }
+	u4 getFloat() { return (u4)cp->getFloatAt(constantValueIndex); }
+	u4 getLong() { return (u4)cp->getLongAt(constantValueIndex); }
+	u4 getDouble() { return (u4)cp->getDoubleAt(constantValueIndex); }
 };
 
 class Synthetic : public AttributeValue {
@@ -296,6 +296,42 @@ public:
 public:
 	std::string getName() { return cp->getUtf8At(nameIndex); }
 	std::string getDescriptors() { return cp->getUtf8At(descriptorIndex); }
+	
+	auto getReturnValue() -> std::string { 
+		auto descriptor = cp->getUtf8At(descriptorIndex); 
+		size_t index = (index = descriptor.find("()")) != std::string::npos ? index : (index = descriptor.find(";)")) != std::string::npos ? index : -1;
+		assert(index != -1); 
+		return &descriptor.data()[index + 2];
+	}
+
+	auto getArguments() -> std::vector<std::pair<size_t, std::string>>
+	{
+		std::vector<std::pair<size_t, std::string>> arguments;
+
+		auto descriptor = cp->getUtf8At(descriptorIndex);
+		size_t end_index = (end_index = descriptor.find(";)")) != std::string::npos ? end_index : -1;
+		if (descriptor.find("()") != std::string::npos) // no args
+			return arguments;
+
+		size_t index = 0;
+		while (index != -1)
+		{
+			index = (index = std::string(&descriptor.data()[index]).find("(")) != std::string::npos ? (index +=1) : -1;
+			if (index == -1)
+				index = (index = std::string(&descriptor.data()[index]).find(";")) != std::string::npos ? (index += 1) : -1;
+
+			size_t end_index = (end_index = std::string(&descriptor.data()[index]).find(";")) != std::string::npos ? end_index : -1;
+			if (end_index == -1)
+				break;
+
+			if (index == -1)
+				break;
+			auto str_cpy = std::string(&descriptor[index]);
+			str_cpy.resize(end_index - (index-1));
+			arguments.push_back(std::make_pair(arguments.size()+1, str_cpy));
+		}
+		return arguments;
+	}
 
 	bool isPublic() { return (accessFlags & 0x0001) != 0; }
 	bool isPrivate() { return (accessFlags & 0x0002) != 0; }

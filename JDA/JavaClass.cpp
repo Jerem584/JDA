@@ -32,7 +32,7 @@ void JavaClass::readAttributeList(u2 count, std::vector<AttributeInfo*>* list) {
 			buf->get(&code->maxLocals);
 
 			buf->get(&code->codeLength);
-			for (int i = 0; i < code->codeLength; i++) {
+			for (uint32_t i = 0; i < code->codeLength; i++) {
 				code->code.push_back(buf->get<u1>());
 			}
 
