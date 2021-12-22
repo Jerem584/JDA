@@ -94,4 +94,6 @@ void JavaClass::read() {
 	}
 
 	buf->get(&accessFlags);
+	buf->get(&thisClass);
+	buf->get(&superClass);
 }

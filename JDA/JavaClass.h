@@ -137,6 +137,10 @@ public:
 		return ((CP_Utf8*)cpInfos.at(idx))->value;
 	}
 
+	std::string getClassAt(int idx) {
+		return getUtf8At(((CP_Class*)cpInfos.at(idx))->nameIndex);
+	}
+
 	std::string getStringAt(int idx) {
 		return getUtf8At(((CP_String*)cpInfos.at(idx))->utf8Index);
 	}
@@ -176,6 +180,8 @@ public:
 	ConstantPool* constantPool;
 
 	u2 accessFlags;
+	u2 thisClass;
+	u2 superClass;
 public:
 	JavaClass(ByteBuffer* buffer) : buf(buffer){}
 	void read();
@@ -188,4 +194,12 @@ public:
 	bool isSynthetic() { return (accessFlags & 0x1000) != 0; }
 	bool isAnnotation() { return (accessFlags & 0x2000) != 0; }
 	bool isEnum() { return (accessFlags & 0x4000) != 0; }
+
+	std::string getClassName() {
+		return constantPool->getClassAt(thisClass);
+	}
+
+	std::string getSuperClassName() {
+		return constantPool->getClassAt(superClass);
+	}
 };

@@ -11,7 +11,7 @@ int main() {
 	JDA* jda = new JDA(file);
 
 	auto b = jda->classes[0];
-	
+	std::cout << b->getClassName() << " : " << b->getSuperClassName() << std::endl;
 
 	return 0;
 }
