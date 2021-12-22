@@ -7,8 +7,9 @@ void JavaClass::read() {
 
 	//CONSTANT POOL READ//
 	constantPool = new ConstantPool();
+	constantPool->cpInfos.push_back(new ConstantPoolInfo(ConstantPoolType::CONSTANT_Null));
 	buf->get(&constantPool->constantPoolCount);
-	for (int i = 0; i < constantPool->constantPoolCount-1; i++) {
+	for (int i = 1; i < constantPool->constantPoolCount; i++) {
 		ConstantPoolType type = (ConstantPoolType)buf->get<u1>();
 		if (type == ConstantPoolType::CONSTANT_MethodRef) {
 			CP_MethodRef* methodRef = new CP_MethodRef(type);

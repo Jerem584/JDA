@@ -3,6 +3,7 @@
 #include "ByteBuffer.h"
 
 enum class ConstantPoolType {
+	CONSTANT_Null = 0,
 	CONSTANT_Class = 7,
 	CONSTANT_FieldRef = 9,
 	CONSTANT_MethodRef = 10,
@@ -131,6 +132,38 @@ class ConstantPool {
 public:
 	u2 constantPoolCount;
 	std::vector<ConstantPoolInfo*> cpInfos;
+public:
+	std::string getUtf8At(int idx) {
+		return ((CP_Utf8*)cpInfos.at(idx))->value;
+	}
+
+	std::string getStringAt(int idx) {
+		return getUtf8At(((CP_String*)cpInfos.at(idx))->utf8Index);
+	}
+
+	std::string getNameAndTypeName(int idx) {
+		return getUtf8At(((CP_NameAndType*)cpInfos.at(idx))->nameIndex);
+	}
+
+	std::string getNameAndTypeDescriptor(int idx) {
+		return getUtf8At(((CP_NameAndType*)cpInfos.at(idx))->descriptorIndex);
+	}
+
+	u4 getIntAt(int idx) {
+		return ((CP_Integer*)cpInfos.at(idx))->value;
+	}
+
+	float getFloatAt(int idx) {
+		return ((CP_Float*)cpInfos.at(idx))->value;
+	}
+
+	long getLongAt(int idx) {
+		return ((CP_Long*)cpInfos.at(idx))->value;
+	}
+
+	double getDoubleAt(int idx) {
+		return ((CP_Long*)cpInfos.at(idx))->value;
+	}
 };
 
 class JavaClass {
