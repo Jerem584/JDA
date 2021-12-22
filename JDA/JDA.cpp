@@ -8,13 +8,17 @@ JDA::JDA(zip* archive) {
 			zip_stat_t stat;
 			zip_stat_index(jarFile, i, ZIP_FL_UNCHANGED, &stat);
 			zip_uint64_t size = stat.size;
-			
+
 			zip_file_t* file = zip_fopen_index(jarFile, i, ZIP_FL_UNCHANGED);
-			byte* buffer = (byte*)malloc(size);
+			byte* buffer = (byte*)malloc(size); // malloc donc free
 			zip_fread(file, buffer, size);
 			zip_fclose(file);
-
 			std::vector<byte> res(buffer, buffer + size);
+			if (buffer[0] != 202/*ca*/ || buffer[1] != 254/*fe*/ || buffer[2] != 186/*ba*/ || buffer[3] != 190/*be*/)
+			{
+				std::cout << "[-] Magic value incorrect for -> " << name << std::endl;
+			}
+			free(buffer); // free (c'est mieux)
 			classBuffers.insert(std::pair(name, new ByteBuffer(res)));
 		}
 	}

@@ -14,8 +14,6 @@ public:
 	template<typename T>
 	T get();
 	
-	auto skip(int size) -> void { pos += size; }
-
 	std::string readString(int);
 };
 
