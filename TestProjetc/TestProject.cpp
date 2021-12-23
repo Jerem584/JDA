@@ -22,12 +22,13 @@ int main() {
 		std::cout << "Methods:" << std::endl;
 		for (auto method : b->methods) {
 			std::cout << "-- " << method->getName() << "(";
-			for (auto argument : method->getArguments())
+			for (auto args : method->getArguments())
 			{
-				std::cout << argument.second << (method->getArguments().size() >= argument.first+size_t(1) ? "," : "");
+				std::cout << args << ", ";
 			}
-			std::cout << ")" << method->getReturnType() << std::endl;
+			std::cout << ") -> " << method->getReturnType() << std::endl;
 		}
+
 		std::cout << std::endl;
 	}
 	
