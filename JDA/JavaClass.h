@@ -153,6 +153,18 @@ public:
 		return getUtf8At(((CP_NameAndType*)cpInfos.at(idx))->descriptorIndex);
 	}
 
+	CP_NameAndType* getNameAndType(int idx) {
+		return ((CP_NameAndType*)cpInfos.at(idx));
+	}
+
+	CP_FieldRef* getFieldRef(int idx) {
+		return ((CP_FieldRef*)cpInfos.at(idx));
+	}
+
+	CP_MethodRef* getMethodRef(int idx) {
+		return ((CP_MethodRef*)cpInfos.at(idx));
+	}
+
 	u4 getIntAt(int idx) {
 		return (u4)((CP_Integer*)cpInfos.at(idx))->value;
 	}
@@ -245,6 +257,14 @@ public:
 	std::vector<InnerClass*> innerClasses;
 public:
 	InnerClassAV(ConstantPool* c) : AttributeValue(c) {}
+};
+
+class Exceptions : public AttributeValue {
+public:
+	u2 numberOfExceptions;
+	std::vector<std::string> exceptions;
+public:
+	Exceptions(ConstantPool* c) : AttributeValue(c) {}
 };
 
 class AttributeInfo {
@@ -377,8 +397,9 @@ public:
 
 	std::vector<u1> getCode() {
 		for (const auto& attr : attributes) {
-			if (attr->getName().compare("Code") == 0)
-				return ((Code*)attr)->code;
+			if (attr->getName().compare("Code") == 0) {
+				return ((Code*)attr->value)->code;
+			}
 		}
 		return std::vector<u1>();
 	}

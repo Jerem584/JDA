@@ -195,7 +195,7 @@ enum class JvmOpcode {
     INVOKEVIRTUAL = 182,
     INVOKESPECIAL = 183,
     INVOKESTATIC = 184,
-    INVOKEERFACE = 185,
+    INVOKEINTERFACE = 185,
     INVOKEDYNAMIC = 186,
     NEW = 187,
     NEWARRAY = 188,
@@ -209,4 +209,9 @@ enum class JvmOpcode {
     MULTIANEWARRAY = 197,
     IFNULL = 198,
     IFNONNULL = 199,
+    GOTO_W = 200,
+    JSR_W = 201,
+    LDC_W = 19,
+    LDC2_W = 20,
+    WIDE = 196,
 };

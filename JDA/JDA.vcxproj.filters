@@ -33,6 +33,9 @@
     <ClCompile Include="JClassUtils.cpp">
       <Filter>Source Files\utilities</Filter>
     </ClCompile>
+    <ClCompile Include="CodeUtils.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JDA.h">
@@ -51,6 +54,9 @@
       <Filter>Header Files\utilities</Filter>
     </ClInclude>
     <ClInclude Include="JvmOpcodes.h">
+      <Filter>Header Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="CodeUtils.h">
       <Filter>Header Files\utilities</Filter>
     </ClInclude>
   </ItemGroup>
