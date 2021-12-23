@@ -10,6 +10,7 @@
 #include <zip.h> // vcpkg install libzip:x64-windows && vcpkg integrate install
 #include <fstream>
 #include <cassert>
+#include "JvmOpcodes.h"
 
 typedef uint8_t u1;
 typedef uint16_t u2;

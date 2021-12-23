@@ -24,14 +24,14 @@ class ConstantPoolInfo {
 public:
 	ConstantPoolType type;
 public:
-	ConstantPoolInfo(ConstantPoolType cpType) : type(cpType){}
+	ConstantPoolInfo(ConstantPoolType cpType) : type(cpType) {}
 };
 
 class CP_MethodRef : public ConstantPoolInfo {
 public:
 	u2 classIndex, nameAndTypeIndex;
 public:
-	CP_MethodRef(ConstantPoolType cpType) : ConstantPoolInfo(cpType){}
+	CP_MethodRef(ConstantPoolType cpType) : ConstantPoolInfo(cpType) {}
 };
 
 class CP_InterfaceMethodRef : public ConstantPoolInfo {
@@ -174,14 +174,14 @@ class AttributeValue {
 public:
 	ConstantPool* cp;
 public:
-	AttributeValue(ConstantPool* constantPool) : cp(constantPool){}
+	AttributeValue(ConstantPool* constantPool) : cp(constantPool) {}
 };
 
 class ConstantValue : public AttributeValue {
 public:
 	u2 constantValueIndex;
 public:
-	ConstantValue(ConstantPool* c) : AttributeValue(c){}
+	ConstantValue(ConstantPool* c) : AttributeValue(c) {}
 public:
 	u4 getInt() { return (u4)cp->getIntAt(constantValueIndex); }
 	u4 getFloat() { return (u4)cp->getFloatAt(constantValueIndex); }
@@ -234,7 +234,7 @@ public:
 	ConstantPool* cp;
 	u2 innerClassIndex, outerClassIndex, innerNameIndex, accessFlags;
 public:
-	InnerClass(ConstantPool* constantPool) : cp(constantPool){}
+	InnerClass(ConstantPool* constantPool) : cp(constantPool) {}
 public:
 	std::string getClassName() { return cp->getUtf8At(innerNameIndex); }
 };
@@ -268,7 +268,7 @@ public:
 	u2 attributeCount;
 	std::vector<AttributeInfo*> attributes;
 public:
-	FieldInfo(ConstantPool* constantPool) : cp(constantPool){}
+	FieldInfo(ConstantPool* constantPool) : cp(constantPool) {}
 public:
 	std::string getName() { return cp->getUtf8At(nameIndex); }
 	std::string getDescriptor() { return cp->getUtf8At(descriptorIndex); }
@@ -288,47 +288,99 @@ class MethodInfo {
 public:
 	ConstantPool* cp;
 	u2 accessFlags, nameIndex, descriptorIndex;
-	
+
 	u2 attributeCount;
 	std::vector<AttributeInfo*> attributes;
 public:
-	MethodInfo(ConstantPool* constantPool) : cp(constantPool){}
+	MethodInfo(ConstantPool* constantPool) : cp(constantPool) {}
 public:
 	std::string getName() { return cp->getUtf8At(nameIndex); }
 	std::string getDescriptors() { return cp->getUtf8At(descriptorIndex); }
-	
-	auto getReturnType() -> std::string { 
-		auto descriptor = getDescriptors();
-		return descriptor.substr(descriptor.find_last_of(")")+1);
+
+	auto getType(std::string str, size_t& index) -> std::string
+	{
+		auto c = str[0];
+		if (c != 'L')
+			index++;
+		if (c == ')')
+			return getType(&str[1], index);
+		if (c == '[')
+		{
+			auto nextindex = &str[1];
+			auto type = getType(nextindex, index);
+			return type.append("[]");
+		}
+		if (c == 'D')
+			return ("java/lang/Double");
+
+		if (c == 'I')
+			return ("java/lang/Integer");
+
+		if (c == 'Z')
+			return ("java/lang/Boolean");
+
+		if (c == 'J')
+			return ("java/lang/Long");
+
+		if (c == 'C')
+			return ("java/lang/Character");
+
+		if (c == 'F')
+			return ("java/lang/Float");
+
+		if (c == 'B')
+			return ("java/lang/Byte");
+
+		if (c == 'V')
+			return ("java/lang/Void");
+
+		if (c == 'S')
+			return ("java/lang/Short");
+
+		if (c == 'L')
+		{
+			auto copy_str = std::string(&str[1]);
+			auto end_index = copy_str.find(";");
+			copy_str.resize(end_index);
+			index += end_index + 2;
+			return copy_str;
+		}
 	}
 
-	auto getArguments() -> std::vector<std::pair<size_t, std::string>>
-	{
-		std::vector<std::pair<size_t, std::string>> arguments;
+	auto getReturnType() -> std::string {
+		auto descriptor = getDescriptors();
+		size_t end_index = descriptor.find(")");
+		return getType(std::string(&descriptor[end_index]), end_index);
+	}
 
-		auto descriptor = cp->getUtf8At(descriptorIndex);
-		size_t end_index = (end_index = descriptor.find(";)")) != std::string::npos ? end_index : -1;
+	auto getArguments() -> std::vector<std::string>
+	{
+		std::vector<std::string> arguments;
+
+		auto descriptor = std::string(&cp->getUtf8At(descriptorIndex)[1]); // skip the (
 		if (descriptor.find("()") != std::string::npos) // no args
 			return arguments;
+		descriptor.resize(descriptor.find(")")); // skip the ) 
 
 		size_t index = 0;
-		while (index != -1)
+		while (true)
 		{
-			index = (index = std::string(&descriptor.data()[index]).find("(")) != std::string::npos ? (index +=1) : -1;
-			if (index == -1)
-				index = (index = std::string(&descriptor.data()[index]).find(";")) != std::string::npos ? (index += 1) : -1;
-
-			size_t end_index = (end_index = std::string(&descriptor.data()[index]).find(";")) != std::string::npos ? end_index : -1;
-			if (end_index == -1)
+			if (index > (descriptor.size()))
 				break;
-
-			if (index == -1)
+			auto current_string = std::string(&descriptor[index]);
+			if (current_string.empty())
 				break;
-			auto str_cpy = std::string(&descriptor[index]);
-			str_cpy.resize(end_index - (index-1));
-			arguments.push_back(std::make_pair(arguments.size()+1, str_cpy));
+			arguments.push_back(getType(current_string, index));
 		}
 		return arguments;
+	}
+
+	std::vector<u1> getCode() {
+		for (const auto& attr : attributes) {
+			if (attr->getName().compare("Code") == 0)
+				return ((Code*)attr)->code;
+		}
+		return std::vector<u1>();
 	}
 
 	bool isPublic() { return (accessFlags & 0x0001) != 0; }
