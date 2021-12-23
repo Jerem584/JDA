@@ -334,6 +334,9 @@ public:
 		if (c == 'V')
 			return ("java/lang/Void");
 
+		if (c == 'S')
+			return ("java/lang/Short");
+
 		if (c == 'L')
 		{
 			auto copy_str = std::string(&str[1]);
