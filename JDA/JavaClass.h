@@ -375,6 +375,14 @@ public:
 		return arguments;
 	}
 
+	std::vector<u1> getCode() {
+		for (const auto& attr : attributes) {
+			if (attr->getName().compare("Code") == 0)
+				return ((Code*)attr)->code;
+		}
+		return std::vector<u1>();
+	}
+
 	bool isPublic() { return (accessFlags & 0x0001) != 0; }
 	bool isPrivate() { return (accessFlags & 0x0002) != 0; }
 	bool isProtected() { return (accessFlags & 0x0004) != 0; }
