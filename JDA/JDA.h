@@ -8,8 +8,10 @@ class JDA {
 public:
 	zip* jarFile;
 public:
-	std::vector<JavaClass*> classes;
+	std::vector<std::pair<std::string, JavaClass*>> classes;
+	JDA() {};
 	JDA(zip*);
 public:
 	JavaClass* getClass(std::string name);
+	std::vector<JavaClass*> getClasses(std::string name);
 };

@@ -3,60 +3,28 @@
 #include <zip.h>
 #include <filesystem>
 #include "CodeUtils.h"
+#include "ClassNodes.h"
+/* Java Deobfuscator */
 
 int main() {
 	int error;
-	auto file_path = std::filesystem::current_path() / "../jars" / "erazion.jar";
+	auto file_path_era = std::filesystem::current_path() / "../jars" / "averfight.jar";
+	auto file_path_mc  = std::filesystem::current_path() / "../jars" / "cleaned_minecraft.jar";
 
-	zip* file = zip_open(file_path.string().c_str(), ZIP_RDONLY, &error);
-	JDA* jda = new JDA(file);
+	zip* file_obf = zip_open(file_path_era.string().c_str(), ZIP_RDONLY, &error);
+	zip* file_unobf = zip_open(file_path_mc.string().c_str(), ZIP_RDONLY, &error);
+	JDA* jda_obf = new JDA(file_obf);
+	JDA* jda_unobf = new JDA(file_unobf);
 
-	for (auto& b : jda->classes)
-	{
-		std::cout << b->getClassName() << " : " << b->getSuperClassName() << " : " << (b->interfaces.size() != 0 ? b->interfaces[0] : "none") << std::endl;
-
-		std::cout << "Fields:" << std::endl;
-		for (auto field : b->fields) {
-			std::cout << "-- " << field->getName() << field->getDescriptor() << std::endl;
-		}
-
-		std::cout << "Methods:" << std::endl;
-		for (auto method : b->methods) {
-			std::cout << "-- " << method->getName() << "(";
-			for (auto args : method->getArguments())
-			{
-				std::cout << args << ", ";
-			}
-			std::cout << ") -> " << method->getReturnType() << std::endl;
-		}
-
-		std::cout << std::endl;
-	}
-
-
+	zip_close(file_obf);
+	zip_close(file_unobf);
+	std::cout << "[+] Obfuscated file loaded -> " << file_path_era.string() << std::endl;
+	std::cout << "[+] UnObfuscated file loaded -> " << file_path_mc.string() << std::endl;
+	
 	//--OPCODE MANIPULATION--//
+	ClassUtils* CUtils = new ClassUtils(jda_obf, jda_unobf);
+	CUtils->SpotDifference();
 
-	/*auto b = jda->classes[0];
-	auto method = b->methods[1];
-	for (auto opcode : CodeUtils::getOpcodesFromVector(method->getCode())) {
-		std::cout << std::format("{:x}", (int)opcode.first) << std::endl;
-		for (auto arg : opcode.second) {
-			std::cout << "- " << std::format("{:x}", arg) << std::endl;
-		}
-	}
-
-	std::vector<std::pair<JvmOpcode, std::vector<u1>>> opcodes = CodeUtils::getOpcodesFromVector(method->getCode());
-	for (const auto& opcode : opcodes) {
-		if (opcode.first == JvmOpcode::INVOKESPECIAL) {
-			u2 methodRefIdx = CodeUtils::getInvokeIndex(opcode.second);
-			CP_MethodRef* methodRef = b->constantPool->getMethodRef(methodRefIdx);
-			std::string methodClass = b->constantPool->getClassAt(methodRef->classIndex);
-			std::string name = b->constantPool->getNameAndTypeName(methodRef->nameAndTypeIndex);
-			std::string descriptor = b->constantPool->getNameAndTypeDescriptor(methodRef->nameAndTypeIndex);
-
-			std::cout << methodClass << "  " << name << "  " << descriptor << std::endl;
-		}
-	}*/
 
 	return 0;
 }

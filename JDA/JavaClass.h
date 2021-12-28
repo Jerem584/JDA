@@ -19,6 +19,87 @@ enum class ConstantPoolType {
 	CONSTANT_MethodType = 16,
 	CONSTANT_InvokeDynamic = 18,
 };
+class MethodUtils
+{
+public:
+	static auto getType(std::string str, size_t& index) -> std::string
+	{
+		auto c = str[0];
+		if (c != 'L')
+			index++;
+		if (c == ')')
+			return getType(&str[1], index);
+		if (c == '[')
+		{
+			auto nextindex = &str[1];
+			auto type = getType(nextindex, index);
+			return type.append("[]");
+		}
+		if (c == 'D')
+			return ("java/lang/Double");
+
+		if (c == 'I')
+			return ("java/lang/Integer");
+
+		if (c == 'Z')
+			return ("java/lang/Boolean");
+
+		if (c == 'J')
+			return ("java/lang/Long");
+
+		if (c == 'C')
+			return ("java/lang/Character");
+
+		if (c == 'F')
+			return ("java/lang/Float");
+
+		if (c == 'B')
+			return ("java/lang/Byte");
+
+		if (c == 'V')
+			return ("java/lang/Void");
+
+		if (c == 'S')
+			return ("java/lang/Short");
+
+		if (c == 'L')
+		{
+			auto copy_str = std::string(&str[1]);
+			auto end_index = copy_str.find(";");
+			copy_str.resize(end_index);
+			index += end_index + 2;
+			return copy_str;
+		}
+		return "ERROR";
+	}
+
+	static auto getReturnType(std::string descriptor) -> std::string {
+		size_t end_index = descriptor.find(")");
+		return getType(std::string(&descriptor[end_index]), end_index);
+	}
+
+	static auto getArguments(std::string desc) -> std::vector<std::string>
+	{
+		std::vector<std::string> arguments;
+
+		auto descriptor = std::string(&desc[1]); // skip the (
+		if (descriptor.find("()") != std::string::npos) // no args
+			return arguments;
+		descriptor.resize(descriptor.find(")")); // skip the ) 
+
+		size_t index = 0;
+		while (true)
+		{
+			if (index > (descriptor.size()))
+				break;
+			auto current_string = std::string(&descriptor[index]);
+			if (current_string.empty())
+				break;
+			arguments.push_back(getType(current_string, index));
+		}
+		return arguments;
+	}
+};
 
 class ConstantPoolInfo {
 public:
@@ -317,84 +398,6 @@ public:
 	std::string getName() { return cp->getUtf8At(nameIndex); }
 	std::string getDescriptors() { return cp->getUtf8At(descriptorIndex); }
 
-	auto getType(std::string str, size_t& index) -> std::string
-	{
-		auto c = str[0];
-		if (c != 'L')
-			index++;
-		if (c == ')')
-			return getType(&str[1], index);
-		if (c == '[')
-		{
-			auto nextindex = &str[1];
-			auto type = getType(nextindex, index);
-			return type.append("[]");
-		}
-		if (c == 'D')
-			return ("java/lang/Double");
-
-		if (c == 'I')
-			return ("java/lang/Integer");
-
-		if (c == 'Z')
-			return ("java/lang/Boolean");
-
-		if (c == 'J')
-			return ("java/lang/Long");
-
-		if (c == 'C')
-			return ("java/lang/Character");
-
-		if (c == 'F')
-			return ("java/lang/Float");
-
-		if (c == 'B')
-			return ("java/lang/Byte");
-		
-		if (c == 'V')
-			return ("java/lang/Void");
-
-		if (c == 'S')
-			return ("java/lang/Short");
-
-		if (c == 'L')
-		{
-			auto copy_str = std::string(&str[1]);
-			auto end_index = copy_str.find(";");
-			copy_str.resize(end_index);
-			index += end_index + 2;
-			return copy_str;
-		}
-	}
-	
-	auto getReturnType() -> std::string { 
-		auto descriptor = getDescriptors();
-		size_t end_index = descriptor.find(")");
-		return getType(std::string(&descriptor[end_index]), end_index);
-	}
-
-	auto getArguments() -> std::vector<std::string>
-	{
-		std::vector<std::string> arguments;
-
-		auto descriptor = std::string(&cp->getUtf8At(descriptorIndex)[1]); // skip the (
-		if (descriptor.find("()") != std::string::npos) // no args
-			return arguments;
-		descriptor.resize(descriptor.find(")")); // skip the ) 
-
-		size_t index = 0; 
-		while (true)
-		{
-			if (index > (descriptor.size()))
-				break;
-			auto current_string = std::string(&descriptor[index]);
-			if (current_string.empty())
-				break;
-			arguments.push_back(getType(current_string, index));
-		}
-		return arguments;
-	}
-
 	std::vector<u1> getCode() {
 		for (const auto& attr : attributes) {
 			if (attr->getName().compare("Code") == 0) {
@@ -422,6 +425,7 @@ class JavaClass {
 private:
 	ByteBuffer* buf;
 public:
+	char is_readed;
 	u2 minorVersion;
 	u2 majorVersion;
 
