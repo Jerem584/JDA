@@ -31,9 +31,10 @@ JDA::JDA(zip* archive) {
 	}
 }
 JavaClass* JDA::getClass(std::string name) {
+	// += .class 
+	name = name.append(".class");
 	for (const auto& clazz : classes) {
-		name = name.append(".class");
-		if ((clazz.first).compare("net/minecraft/client/main/Main.class") == 0)
+		if ((clazz.first).compare(name) == 0)
 			return clazz.second;
 	}
 	return nullptr;
