@@ -21,6 +21,7 @@ typedef uint32_t u4;
 typedef uint64_t u8;
 using zip = miniz_cpp::zip_file;
 #include "utilities/JvmOpcodes.h" // this only declare
+inline int g_ReadCount;
 
 
 #include "utilities/ByteBuffer.h"
