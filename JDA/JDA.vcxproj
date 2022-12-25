@@ -42,13 +42,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -153,20 +153,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ByteBuffer.cpp" />
-    <ClCompile Include="CodeUtils.cpp" />
-    <ClCompile Include="JavaClass.cpp" />
-    <ClCompile Include="JClassUtils.cpp" />
-    <ClCompile Include="JDA.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ByteBuffer.h" />
-    <ClInclude Include="CodeUtils.h" />
-    <ClInclude Include="common.h" />
-    <ClInclude Include="JavaClass.h" />
-    <ClInclude Include="JClassUtils.h" />
-    <ClInclude Include="JDA.h" />
-    <ClInclude Include="JvmOpcodes.h" />
+    <ClInclude Include="framework\utilities\ByteBuffer.h" />
+    <ClInclude Include="framework\utilities\CodeUtils.h" />
+    <ClInclude Include="framework\common.h" />
+    <ClInclude Include="framework\vendor\zip.h" />
+    <ClInclude Include="framework\main_class\JavaClass.h" />
+    <ClInclude Include="framework\utilities\JClassUtils.h" />
+    <ClInclude Include="framework\main_class\JDA.h" />
+    <ClInclude Include="framework\utilities\JvmOpcodes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

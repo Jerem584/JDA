@@ -1,42 +1,36 @@
-#include <JDA.h>
+#include <framework/common.h>
 #include <iostream>
-#include <zip.h>
 #include <filesystem>
-#include "CodeUtils.h"
+#include <format>
 #include "ClassNodes.h"
 /* Java Deobfuscator */
 
 int main() {
 
 	int error;
-	auto file_path_era = std::filesystem::current_path() / "../jars" / "averfight.jar";
-	auto file_path_mc  = std::filesystem::current_path() / "../jars" / "cleaned_minecraft.jar";
+	auto nfix_path = std::filesystem::current_path() / "../jars" / "NFix.jar";
+	std::cout << std::format("File path = {}\n", nfix_path.string()).c_str() << std::endl;
+	zip* file_obf = new zip(nfix_path.string().c_str());
 
-	zip* file_obf = zip_open(file_path_era.string().c_str(), ZIP_RDONLY, &error);
-	zip* file_unobf = zip_open(file_path_mc.string().c_str(), ZIP_RDONLY, &error);
-	auto t1 = std::chrono::high_resolution_clock::now();
-	JDA* jda_obf = new JDA(file_obf);
-	JDA* jda_unobf = new JDA(file_unobf);
+	file_obf->printdir();
+	for (auto e : file_obf->namelist())
+	{
+		std::cout << "E = " << e.c_str() << std::endl;
+		std::cout << "is_dir = " << file_obf->is_directory(e) << std::endl;
+	}
 
-	zip_close(file_obf);
-	zip_close(file_unobf);
-	std::cout << "[+] Obfuscated file loaded -> " << file_path_era.string() << std::endl;
-	std::cout << "[+] UnObfuscated file loaded -> " << file_path_mc.string() << std::endl;
+	auto jda = new JDA(file_obf);
+	for (auto klass : jda->getClasses())
+	{
+		if(!klass->is_readed)
+			klass->read();
+		std::cout << "Found class with name = " << klass->getClassName() << std::endl;
+		for (auto method : klass->methods)
+		{
+			std::cout << "found method " << method->getName() << " in " << klass->getClassName() << std::endl;
+		}
+	}
 	
-	//--OPCODE MANIPULATION--//
-	ClassUtils* CUtils = new ClassUtils(jda_obf, jda_unobf);
-	CUtils->SpotDifference();
 
-	auto delta = std::chrono::duration_cast<std::chrono::milliseconds> (std::chrono::high_resolution_clock::now() - t1);
-	std::cout << "[+] Deobfuscation Done in -> " << delta.count() << "ms" << std::endl;
-
-	//for (auto b : DeObfuscatedClasses)
-	//{
-	//	std::cout << b.first << " -> " << b.second->ClassName.second << ";" << std::endl;
-	//	for (auto p : b.second->Methods)
-	//	{
-	//		std::cout << b.first << "." << p.first << " -> " << p.second << std::endl;
-	//	}
-	//}
 	return 0;
 }

@@ -19,45 +19,39 @@
     <Filter Include="Source Files\utilities">
       <UniqueIdentifier>{f7e807cf-3293-4c0e-ac11-005e1d4d9fa8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\vendor">
+      <UniqueIdentifier>{963ba4e0-1565-4304-9446-9893cd2cd070}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="JDA.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ByteBuffer.cpp">
-      <Filter>Source Files\utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="JavaClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="JClassUtils.cpp">
-      <Filter>Source Files\utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="CodeUtils.cpp">
-      <Filter>Source Files\utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="JDA.h">
+    <ClInclude Include="framework\main_class\JDA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common.h">
+    <ClInclude Include="framework\common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ByteBuffer.h">
+    <ClInclude Include="framework\utilities\ByteBuffer.h">
       <Filter>Header Files\utilities</Filter>
     </ClInclude>
-    <ClInclude Include="JavaClass.h">
+    <ClInclude Include="framework\main_class\JavaClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JClassUtils.h">
+    <ClInclude Include="framework\utilities\JClassUtils.h">
       <Filter>Header Files\utilities</Filter>
     </ClInclude>
-    <ClInclude Include="JvmOpcodes.h">
+    <ClInclude Include="framework\utilities\JvmOpcodes.h">
       <Filter>Header Files\utilities</Filter>
     </ClInclude>
-    <ClInclude Include="CodeUtils.h">
+    <ClInclude Include="framework\utilities\CodeUtils.h">
       <Filter>Header Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\vendor\zip.h">
+      <Filter>Header Files\vendor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
