@@ -447,7 +447,7 @@ public:
 	u2 attributeCount;
 	std::vector<AttributeInfo*> attributes;
 public:
-	JavaClass(ByteBuffer* buffer) : buf(buffer) {}
+	JavaClass(ByteBuffer* buffer) : buf(buffer) { this->read(); }
 private:
 	void readAttributeList(u2, std::vector<AttributeInfo*>*);
 public:

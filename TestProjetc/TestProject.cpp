@@ -7,7 +7,6 @@
 
 int main() {
 
-	int error;
 	auto nfix_path = std::filesystem::current_path() / "../jars" / "NFix.jar";
 	std::cout << std::format("File path = {}\n", nfix_path.string()).c_str() << std::endl;
 	zip* file_obf = new zip(nfix_path.string().c_str());
@@ -22,8 +21,7 @@ int main() {
 	auto jda = new JDA(file_obf);
 	for (auto klass : jda->getClasses())
 	{
-		if(!klass->is_readed)
-			klass->read();
+
 		std::cout << "Found class with name = " << klass->getClassName() << std::endl;
 		for (auto method : klass->methods)
 		{

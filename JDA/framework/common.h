@@ -7,7 +7,11 @@
 #include <vector>
 #include <filesystem>
 #include <unordered_map>
+#pragma warning(push)
+#pragma warning(disable:6297)
+#pragma warning(disable:6319)
 #include "vendor/zip.h"
+#pragma warning(pop)
 #include <fstream>
 #include <cassert>
 

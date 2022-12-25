@@ -37,7 +37,7 @@ void ByteBuffer::get(T* var) {
 }
 
 std::vector<byte> ByteBuffer::read(int size) {
-	if (pos < buffer.size() && pos + size < buffer.size() + 1) {
+	if (pos < buffer.size() && pos + static_cast<unsigned long long>(size) < buffer.size() + 1) {
 		std::vector<u1> res(buffer.begin() + pos, buffer.begin() + pos + size);
 		std::reverse(res.begin(), res.end());
 		pos += size;

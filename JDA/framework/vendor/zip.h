@@ -2852,6 +2852,9 @@ extern "C" {
 #ifdef _MSC_VER
 #pragma warning (push)
 #pragma warning (disable:4204) // nonstandard extension used : non-constant aggregate initializer (also supported by GNU C and C99, so no big deal)
+#pragma warning (disable:6386) // nonstandard extension used : non-constant aggregate initializer (also supported by GNU C and C99, so no big deal)
+#pragma warning (disable:6319) // nonstandard extension used : non-constant aggregate initializer (also supported by GNU C and C99, so no big deal)
+#pragma warning (disable:26819) // nonstandard extension used : non-constant aggregate initializer (also supported by GNU C and C99, so no big deal)
 #endif
 
     // Simple PNG writer function by Alex Evans, 2011. Released into the public domain: https://gist.github.com/908299, more context at
@@ -3182,6 +3185,7 @@ extern "C" {
 #define MZ_SWAP_UINT32(a, b) do { mz_uint32 t = a; a = b; b = t; } MZ_MACRO_END
 
     // Heap sort of lowercased filenames, used to help accelerate plain central directory searches by mz_zip_reader_locate_file(). (Could also use qsort(), but it could allocate memory.)
+
     static void mz_zip_reader_sort_central_dir_offsets_by_filename(mz_zip_archive* pZip)
     {
         mz_zip_internal_state* pState = pZip->m_pState;
